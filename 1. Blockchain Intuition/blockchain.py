@@ -41,7 +41,7 @@ class Blockchain:
         found = False
         while found is False:
             hash_work = self.hash_proof(previous_proof, new_proof)
-            if hash_work[:4] == '0000':
+            if self.is_valid_pow(hash_work):
                 found = True
             else:
                 new_proof += 1
@@ -61,7 +61,7 @@ class Blockchain:
             
             if block['previous_hash'] != self.hash(previous_block):
                 return False
-            if self.hash_proof(previous_block['proof'], block['proof'])[:4] != '0000':
+            if not self.is_valid_pow(self.hash_proof(previous_block['proof'], block['proof'])):
                 return False
             
             previous_block = block
@@ -72,6 +72,9 @@ class Blockchain:
         return hashlib.sha256(str(self.proof_seed + 
                                   new_proof**2 - 
                                   previous_proof**2).encode()).hexdigest()
+    
+    def is_valid_pow(self, hash_work):
+        return hash_work[:4] == '0000'
     
     
 # Expoe the blockchain using Flask
