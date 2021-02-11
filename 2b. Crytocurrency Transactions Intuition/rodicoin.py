@@ -7,7 +7,7 @@ Created on Mon Dec  22 16:29:31 2020
 
 # Module 2 - Create a cryptocurrency
 """
-
+import sys
 import random
 import datetime
 import json
@@ -155,6 +155,14 @@ def chain_valid():
                 'valid' : blockchain.is_chain_valid()}
     return jsonify(response), 200
 
+@app.route('/replace_chain', methods = ['GET'])
+def replace_chain():
+    is_chain_replaced = blockchain.replace_chain()
+    response = {'blockchain' : blockchain.chain,
+                'valid' : blockchain.is_chain_valid(),
+                'replaced': is_chain_replaced}
+    return jsonify(response), 200
+
 @app.route('/add_transaction', methods = ['POST'])
 def add_transaction():
     transaction = request.get_json()
@@ -164,4 +172,18 @@ def add_transaction():
     response = f'This transaction will be in the next mined block {index}'
     return jsonify(response), 200   
 
-app.run(host = '0.0.0.0', port = 5000)
+@app.route('/connect_node', methods = ['POST'])
+def connect_node():
+    nodes = request.get_json().get('nodes')
+    if nodes is None:
+        return "No nodes", 400
+    for node in nodes:
+        blockchain.add_node(node)
+    response = {'message': 'Nodes connected',
+                'nodes': list(blockchain.nodes)}
+    return jsonify(response), 200
+
+if __name__ == '__main__':
+    # Launch server
+    port = int(sys.argv[1])
+    app.run(host = '0.0.0.0', port = port)
