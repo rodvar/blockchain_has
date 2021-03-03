@@ -184,6 +184,7 @@ def connect_node():
     return jsonify(response), 200
 
 if __name__ == '__main__':
+    # it would be even beter is the transactions are shared between processes
     # Launch server
     port = int(sys.argv[1])
     app.run(host = '0.0.0.0', port = port)
